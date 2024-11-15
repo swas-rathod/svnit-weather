@@ -49,23 +49,33 @@ document.addEventListener('DOMContentLoaded', function () {
         const humidityElement = document.getElementById('humidity');
         const heatIndexElement = document.getElementById('heatIndex');
         const currentDateElement = document.getElementById('currentDate');
+        const currentTimeElement = document.getElementById('currentTime');
         const statusDotElement = document.getElementById('statusDot');
         const sensorStatusElement = document.getElementById('sensorStatus');
 
         // Update date
         function updateDate() {
             const now = new Date();
-            const options = { 
+            const optionsDate = { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric',
-                hour: '2-digit',          // Format hours as two digits
-                minute: '2-digit',        // Format minutes as two digits
-                second: '2-digit',        // Format seconds as two digits
-                hour12: false             // Use 24-hour format; set to true for 12-hour format
+                // hour: '2-digit',          // Format hours as two digits
+                // minute: '2-digit',        // Format minutes as two digits
+                // second: '2-digit',        // Format seconds as two digits
+                // hour12: false,             // Use 24-hour format; set to true for 12-hour format
             };
-            currentDateElement.textContent = now.toLocaleDateString('en-US', options);
+            
+            currentDateElement.textContent = now.toLocaleDateString('en-US', optionsDate);
+            // currentTimeElement.textContent = now.toLocaleDateString('en-US', optionsTime);
+            // console.log(now.toLocaleDateString('en-US', optionsTime))
+            // Get hours, minutes, and seconds
+            const hours = String(now.getHours()).padStart(2, '0'); // Add leading zero if needed
+            const minutes = String(now.getMinutes()).padStart(2, '0'); // Add leading zero if needed
+            const seconds = String(now.getSeconds()).padStart(2, '0'); // Add leading zero if needed
+
+            currentTimeElement.textContent = `${hours}:${minutes}:${seconds}` + " GMT+5.30";
         }
         updateDate();
         setInterval(updateDate, 1000);
