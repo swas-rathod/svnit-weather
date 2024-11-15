@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const heatIndexElement = document.getElementById('heatIndex');
         const heatIndexUnitElement = document.getElementById('heatIndexUnit');
         const currentDateElement = document.getElementById('currentDate');
+        const currentTimeElement = document.getElementById('currentTime');
         const statusDotElement = document.getElementById('statusDot');
         const sensorStatusElement = document.getElementById('sensorStatus');
 
