@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Temperature & Humidity Dashboard</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #data { margin-top: 20px; }
+        .value { font-size: 2rem; margin: 10px 0; }
+        .label { font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Temperature & Humidity Monitor</h1>
+    <div id="data">
+        <div>
+            <span class="label">Temperature:</span>
+            <span id="temperature" class="value">--</span> °C
+        </div>
+        <div>
+            <span class="label">Humidity:</span>
+            <span id="humidity" class="value">--</span> %
+        </div>
+    </div>
+
+    <script>
+        // MQTT broker details
+        const brokerUrl = 'wss://broker.emqx.io:8084/mqtt'; // Using WebSockets (wss://) on port 8084
+        const topic = 'tcp/1'; // Replace with your topic
+        const options = {
+            clientId: `mqtt_client_${Math.random().toString(16).substr(2, 8)}`,
+            username: 'emqx',
+            password: 'YOUR_PASSWORD_HERE' // Replace with your actual password
+        };
+
+        // Connect to MQTT broker
+        const client = mqtt.connect(brokerUrl, options);
+
+        // Elements to display data
+        const tempElement = document.getElementById('temperature');
+        const humidityElement = document.getElementById('humidity');
+
+        client.on('connect', () => {
+            console.log('Connected to MQTT broker');
+            client.subscribe(topic, (err) => {
+                if (err) {
+                    console.error('Subscription error:', err);
+                } else {
+                    console.log(`Subscribed to topic: ${topic}`);
+                }
+            });
+        });
+
+        client.on('message', (topic, message) => {
+            console.log(`Received message on topic ${topic}: ${message.toString()}`);
+
+            // Parse the raw message assuming it's in "Temperature: xx, Humidity: yy" format
+            const rawData = message.toString();
+            const tempMatch = rawData.match(/Temperature:\s?([\d.]+)/);
+            const humidityMatch = rawData.match(/Humidity:\s?([\d.]+)/);
+
+            // Update the UI if data matches the expected format
+            if (tempMatch) {
+                tempElement.textContent = tempMatch[1];
+            }
+            if (humidityMatch) {
+                humidityElement.textContent = humidityMatch[1];
+            }
+        });
+
+        client.on('error', (err) => {
+            console.error('Connection error:', err);
+        });
+    </script>
+</body>
+</html>
