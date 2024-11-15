@@ -59,11 +59,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
-                day: 'numeric' 
+                day: 'numeric',
+                hour: '2-digit',          // Format hours as two digits
+                minute: '2-digit',        // Format minutes as two digits
+                second: '2-digit',        // Format seconds as two digits
+                hour12: false             // Use 24-hour format; set to true for 12-hour format
             };
             currentDateElement.textContent = now.toLocaleDateString('en-US', options);
         }
         updateDate();
+        setInterval(updateDate, 1000);
 
         // Variables for sensor status monitoring
         let lastMessageTimestamp = Date.now();
