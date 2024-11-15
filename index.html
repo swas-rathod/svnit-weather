@@ -59,16 +59,16 @@
                 </div>
             </div>
 
-            <div class="text-center text-gray-500 text-sm flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-                Last updated: <span id="lastUpdate" class="ml-1">--</span>
+            <div class="text-center space-y-2">
+                <div class="text-gray-500 text-sm" id="currentDate">--</div>
+                <div class="flex items-center justify-center">
+                    <span class="inline-block w-2 h-2 rounded-full mr-2" id="statusDot"></span>
+                    <span id="sensorStatus" class="font-medium"></span>
+                </div>
             </div>
         </div>
     </div>
 
-<script src = "script.js"></script>
+<script src="mqtt_data_handler.js"></script>
 </body>
 </html>
