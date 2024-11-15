@@ -41,43 +41,91 @@ document.addEventListener('DOMContentLoaded', function () {
             username: 'emqx',
             password: 'admin',
             keepalive: 60,
-            reconnectPeriod: 1000 // Automatically reconnect after 1 second if disconnected
+            reconnectPeriod: 1000
         };
 
         // Elements for displaying data on the webpage
         const tempElement = document.getElementById('temperature');
         const humidityElement = document.getElementById('humidity');
         // const heatIndex = calculateHeatIndex(parseFloat(tempElement), parseFloat(humidityElement));
-        // document.getElementById('heatIndex').textContent = heatIndex;
+        // document.getElementById('heatIndex').textContent = heatIndex;        const currentDateElement = document.getElementById('currentDate');
+        const statusDotElement = document.getElementById('statusDot');
+        const sensorStatusElement = document.getElementById('sensorStatus');
+
+        // Update date
+        function updateDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            currentDateElement.textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDate();
+
+        // Variables for sensor status monitoring
+        let lastMessageTimestamp = Date.now();
+        let statusCheckInterval;
+
+        // Function to reset sensor values
+        function resetSensorValues() {
+            tempElement.textContent = '--';
+            humidityElement.textContent = '--';
+        }
+
+        // Function to update sensor status
+        function updateSensorStatus(isOnline) {
+            if (isOnline) {
+                statusDotElement.className = 'inline-block w-2 h-2 rounded-full mr-2 bg-green-500';
+                sensorStatusElement.className = 'font-medium text-green-500';
+                sensorStatusElement.textContent = 'Live';
+            } else {
+                statusDotElement.className = 'inline-block w-2 h-2 rounded-full mr-2 bg-red-500';
+                sensorStatusElement.className = 'font-medium text-red-500';
+                sensorStatusElement.textContent = 'Offline';
+                resetSensorValues(); // Reset values when sensor goes offline
+            }
+        }
+
         // Connect to the MQTT broker
         const client = mqtt.connect(brokerUrl, options);
 
         client.on('connect', () => {
             console.log('Connected to MQTT broker');
+            updateSensorStatus(true);
+            
             client.subscribe(topic, (err) => {
                 if (err) {
                     console.error('Subscription error:', err);
+                    updateSensorStatus(false);
                 } else {
                     console.log(`Subscribed to topic: ${topic}`);
                 }
             });
+
+            // Start monitoring sensor status
+            statusCheckInterval = setInterval(() => {
+                const timeSinceLastMessage = Date.now() - lastMessageTimestamp;
+                updateSensorStatus(timeSinceLastMessage < 10000); // Consider offline if no message for 10 seconds
+            }, 1000);
         });
 
         client.on('message', (topic, message) => {
             // console.log(message.jsonify());
             console.log(`Received message on topic ${topic}: ${message.toString()}`);
+            lastMessageTimestamp = Date.now();
+            updateSensorStatus(true);
 
-            // Display raw data in the console (for debugging)
             const rawData = message.toString();
             console.log("Raw Data:", rawData);
 
-            // Extract temperature and humidity from the message
             const tempMatch = rawData.match(/Temperature:\s?([\d.]+)/);
             const humidityMatch = rawData.match(/Humidity:\s?([\d.]+)/);
             const heatIndex = calculateHeatIndex(parseFloat(parseInt(tempMatch[1], 10)), parseFloat(parseInt(humidityMatch[1],10)));
             document.getElementById('heatIndex').textContent = heatIndex;
 
-            // Update the HTML elements if data matches the expected format
             if (tempMatch) {
                 tempElement.textContent = tempMatch[1];
             }
@@ -89,10 +137,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         client.on('error', (err) => {
             console.error('Connection error:', err);
+            updateSensorStatus(false);
         });
 
         client.on('close', () => {
             console.log('Disconnected from MQTT broker');
+            updateSensorStatus(false);
+            // Clear the status check interval when disconnected
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+            }
         });
     };
 });
