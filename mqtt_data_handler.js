@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Elements for displaying data on the webpage
         const tempElement = document.getElementById('temperature');
         const humidityElement = document.getElementById('humidity');
-        // const heatIndex = calculateHeatIndex(parseFloat(tempElement), parseFloat(humidityElement));
-        // document.getElementById('heatIndex').textContent = heatIndex;        const currentDateElement = document.getElementById('currentDate');
+        const heatIndexElement = document.getElementById('heatIndex');
+        const currentDateElement = document.getElementById('currentDate');
         const statusDotElement = document.getElementById('statusDot');
         const sensorStatusElement = document.getElementById('sensorStatus');
 
@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function resetSensorValues() {
             tempElement.textContent = '--';
             humidityElement.textContent = '--';
+            heatIndexElement.textContent = '--';
         }
 
         // Function to update sensor status
@@ -113,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         client.on('message', (topic, message) => {
-            // console.log(message.jsonify());
             console.log(`Received message on topic ${topic}: ${message.toString()}`);
             lastMessageTimestamp = Date.now();
             updateSensorStatus(true);
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const tempMatch = rawData.match(/Temperature:\s?([\d.]+)/);
             const humidityMatch = rawData.match(/Humidity:\s?([\d.]+)/);
             const heatIndex = calculateHeatIndex(parseFloat(parseInt(tempMatch[1], 10)), parseFloat(parseInt(humidityMatch[1],10)));
-            document.getElementById('heatIndex').textContent = heatIndex;
+            heatIndexElement.textContent = heatIndex;
 
             if (tempMatch) {
                 tempElement.textContent = tempMatch[1];
@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 humidityElement.textContent = humidityMatch[1];
             }
         });
-       
 
         client.on('error', (err) => {
             console.error('Connection error:', err);

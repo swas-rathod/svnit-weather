@@ -23,19 +23,5 @@ function calculateHeatIndex(tempCelsius, humidity) {
 }
 
 
-function updateWeather() {
-    // Simulate real-time data (replace with actual API calls)
-    const temperature = (25 + Math.random() * 5).toFixed(1);
-    const humidity = (60 + Math.random() * 20).toFixed(1);
-    const heatIndex = calculateHeatIndex(parseFloat(temperature), parseFloat(humidity));
-    const now = new Date().toLocaleTimeString();
-
-    document.getElementById('temperature').textContent = temperature;
-    document.getElementById('humidity').textContent = humidity;
-    document.getElementById('heatIndex').textContent = heatIndex;
-    document.getElementById('lastUpdate').textContent = now;
-}
-
-// Update immediately and then every 3 seconds
-updateWeather();
-setInterval(updateWeather, 3000);
+const heatIndex = calculateHeatIndex(parseFloat(parseInt(tempMatch[1], 10)), parseFloat(parseInt(humidityMatch[1],10)));
+document.getElementById('heatIndex').textContent = heatIndex;
