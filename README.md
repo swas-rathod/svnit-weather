@@ -43,6 +43,15 @@ This document provides step-by-step instructions to set up your Temperature and 
 ## Usage
 Once configured, you can use any MQTT client to subscribe to the topic you set up and start receiving temperature and humidity data from your TnH sensor.
 
+Create a `config.js` and add the following code with your details -
+```
+export const CONFIG = {
+    MQTT_USERNAME:{username},
+    MQTT_PASSWORD:{password},
+    // other configurations...
+};
+```
+
 ## License
 This setup guide is provided under the [MIT License](LICENSE).
 
