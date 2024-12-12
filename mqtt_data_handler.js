@@ -1,3 +1,5 @@
+import { CONFIG } from './config.js';
+
 function calculateHeatIndex(tempCelsius, humidity) {
     const tempF = (tempCelsius * 9/5) + 32;
     
@@ -19,6 +21,8 @@ function calculateHeatIndex(tempCelsius, humidity) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    const mqtt_username = CONFIG.MQTT_USERNAME;
+    const mqtt_password = CONFIG.MQTT_PASSWORD;
     const scriptElement = document.createElement('script');
     scriptElement.src = "https://unpkg.com/mqtt/dist/mqtt.min.js";
     document.head.appendChild(scriptElement);
@@ -30,8 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const topic = 'tcp/1';
         const options = {
             clientId: `mqtt_client_${Math.random().toString(16).substr(2, 8)}`,
-            username: 'emqx',
-            password: 'admin',
+            username: mqtt_username,
+            password: mqtt_password,
             keepalive: 60,
             reconnectPeriod: 1000
         };
